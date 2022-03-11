@@ -31,6 +31,7 @@ pub mod pallet {
 		pub price: Option<BalanceOf<T>>,
 		pub gender: Gender,
 		pub owner: AccountOf<T>,
+        pub date_created: T::Moment,
 	}
 
 	// Enum declaration for Gender.
@@ -47,7 +48,7 @@ pub mod pallet {
 
 	/// Configure the pallet by specifying the parameters and types it depends on.
 	#[pallet::config]
-	pub trait Config: frame_system::Config {
+	pub trait Config: frame_system::Config + pallet_timestamp::Config {
 		/// Because this pallet emits events, it depends on the runtime's definition of an event.
 		type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
 
@@ -329,6 +330,7 @@ pub mod pallet {
 				price: None,
 				gender: gender.unwrap_or_else(Self::gen_gender),
 				owner: owner.clone(),
+                date_created: pallet_timestamp::Pallet::<T>::get(),
 			};
 
 			let kitty_id = T::Hashing::hash_of(&kitty);
