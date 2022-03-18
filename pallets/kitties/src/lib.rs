@@ -2,6 +2,15 @@
 
 pub use pallet::*;
 
+#[cfg(test)]
+mod mock;
+
+#[cfg(test)]
+mod tests;
+
+// #[cfg(feature = "runtime-benchmarks")]
+// mod benchmarking;
+
 #[frame_support::pallet]
 pub mod pallet {
 	use frame_support::pallet_prelude::*;
@@ -14,6 +23,8 @@ pub mod pallet {
 	use sp_io::hashing::blake2_128;
 	use scale_info::TypeInfo;
     use log;
+    use frame_support::traits::Time;
+	use sp_std;
 
 	#[cfg(feature = "std")]
 	use frame_support::serde::{Deserialize, Serialize};
@@ -23,7 +34,7 @@ pub mod pallet {
 		<<T as Config>::Currency as Currency<<T as frame_system::Config>::AccountId>>::Balance;
 
 	// Struct for holding Kitty information.
-	#[derive(Clone, Encode, Decode, PartialEq, RuntimeDebug, TypeInfo, MaxEncodedLen)]
+	#[derive(Clone, Encode, Decode, PartialEq, RuntimeDebug, TypeInfo)]
 	#[scale_info(skip_type_params(T))]
 	#[codec(mel_bound())]
 	pub struct Kitty<T: Config> {
@@ -31,7 +42,13 @@ pub mod pallet {
 		pub price: Option<BalanceOf<T>>,
 		pub gender: Gender,
 		pub owner: AccountOf<T>,
-        pub date_created: T::Moment,
+        pub date_created: <T::TimeProvider as Time>::Moment,
+	}
+
+	impl<T: Config> sp_std::fmt::Display for Kitty<T> {
+		fn fmt(&self, f: &mut sp_std::fmt::Formatter<'_>) -> sp_std::fmt::Result {
+			write!(f, "(dna: {:?}, price: {:?}, gender: {:?}, owner: {:?})", self.dna, self.price, self.gender, self.owner)
+		}
 	}
 
 	// Enum declaration for Gender.
@@ -44,11 +61,12 @@ pub mod pallet {
 
     #[pallet::pallet]
     #[pallet::generate_store(pub(super) trait Store)]
+	#[pallet::without_storage_info]
     pub struct Pallet<T>(_);
 
 	/// Configure the pallet by specifying the parameters and types it depends on.
 	#[pallet::config]
-	pub trait Config: frame_system::Config + pallet_timestamp::Config {
+	pub trait Config: frame_system::Config {
 		/// Because this pallet emits events, it depends on the runtime's definition of an event.
 		type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
 
@@ -61,6 +79,8 @@ pub mod pallet {
 
 		/// The type of Randomness we want to specify for this pallet.
 		type KittyRandomness: Randomness<Self::Hash, Self::BlockNumber>;
+
+        type TimeProvider: Time;
 	}
 
 	// Errors.
@@ -330,8 +350,10 @@ pub mod pallet {
 				price: None,
 				gender: gender.unwrap_or_else(Self::gen_gender),
 				owner: owner.clone(),
-                date_created: pallet_timestamp::Pallet::<T>::get(),
+                date_created: T::TimeProvider::now(),
 			};
+
+			log::info!("{}", kitty);
 
 			let kitty_id = T::Hashing::hash_of(&kitty);
 
