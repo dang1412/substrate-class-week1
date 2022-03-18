@@ -275,6 +275,7 @@ impl pallet_sudo::Config for Runtime {
 /// Configure the pallet-template in pallets/template.
 impl pallet_template::Config for Runtime {
 	type Event = Event;
+	type WeightInfo = pallet_template::weights::SubstrateWeightInfo<Runtime>;
 }
 
 impl pallet_tightly_coupling::Config for Runtime {
@@ -295,6 +296,7 @@ impl pallet_kitties::Config for Runtime {
     type MaxKittyOwned = MaxKittyOwned;
     type Currency = Balances;
     type KittyRandomness = RandomnessCollectiveFlip;
+	type TimeProvider = Timestamp;
 }
 
 // Create the runtime by composing the FRAME pallets that were previously configured.
