@@ -85,9 +85,9 @@ std = [
 	"sp-std/std",
 	"sp-transaction-pool/std",
 	"sp-version/std",
-  "pallet-tightly-coupling/std",
-  "pallet-loosely-coupling/std",
-  "pallet-kitties/std",
+	"pallet-tightly-coupling/std",
+	"pallet-loosely-coupling/std",
+	"pallet-kitties/std",
 ]
 runtime-benchmarks = [
 	"frame-benchmarking/runtime-benchmarks",
@@ -99,4 +99,5 @@ runtime-benchmarks = [
 	"pallet-template/runtime-benchmarks",
 	"pallet-timestamp/runtime-benchmarks",
 	"sp-runtime/runtime-benchmarks",
+	"pallet-kitties/runtime-benchmarks",
 ]
