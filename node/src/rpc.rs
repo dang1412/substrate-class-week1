@@ -41,6 +41,8 @@ where
 	let mut io = jsonrpc_core::IoHandler::default();
 	let FullDeps { client, pool, deny_unsafe } = deps;
 
+    io.extend_with(crate::example_rpc::ExampleRpc::to_delegate(crate::example_rpc::Example{}));
+
 	io.extend_with(SystemApi::to_delegate(FullSystem::new(client.clone(), pool, deny_unsafe)));
 
 	io.extend_with(TransactionPaymentApi::to_delegate(TransactionPayment::new(client.clone())));
