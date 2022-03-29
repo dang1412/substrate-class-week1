@@ -53,6 +53,8 @@ pallet-tightly-coupling = { version = "4.0.0-dev", default-features = false, pat
 pallet-loosely-coupling = { version = "4.0.0-dev", default-features = false, path = "../pallets/loosely-coupling" }
 pallet-kitties = { version = "4.0.0-dev", default-features = false, path = "../pallets/kitties" }
 pallet-template-rpc-runtime-api = { version = "4.0.0-dev", default-features = false, path = "../pallets/template/rpc/runtime-api" }
+pallet-kitties-rpc-runtime-api = { version = "4.0.0-dev", default-features = false, path = "../pallets/kitties/rpc/runtime-api" }
+
 
 
 [build-dependencies]
@@ -91,6 +93,7 @@ std = [
 	"pallet-loosely-coupling/std",
 	"pallet-kitties/std",
     "pallet-template-rpc-runtime-api/std",
+    "pallet-kitties-rpc-runtime-api/std",
 ]
 runtime-benchmarks = [
 	"frame-benchmarking/runtime-benchmarks",

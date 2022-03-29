@@ -3579,6 +3579,8 @@ dependencies = [
  "jsonrpc-core-client",
  "jsonrpc-derive",
  "node-template-runtime",
+ "pallet-kitties-rpc",
+ "pallet-kitties-rpc-runtime-api",
  "pallet-template-rpc",
  "pallet-template-rpc-runtime-api",
  "pallet-transaction-payment-rpc",
@@ -3624,6 +3626,7 @@ dependencies = [
  "pallet-balances",
  "pallet-grandpa",
  "pallet-kitties",
+ "pallet-kitties-rpc-runtime-api",
  "pallet-loosely-coupling",
  "pallet-randomness-collective-flip",
  "pallet-sudo",
@@ -3917,6 +3920,31 @@ dependencies = [
  "sp-io",
  "sp-runtime",
  "sp-std",
+]
+
+[[package]]
+name = "pallet-kitties-rpc"
+version = "4.0.0-dev"
+dependencies = [
+ "jsonrpc-core",
+ "jsonrpc-core-client",
+ "jsonrpc-derive",
+ "pallet-kitties",
+ "pallet-kitties-rpc-runtime-api",
+ "parity-scale-codec 3.1.2",
+ "sp-api",
+ "sp-blockchain",
+ "sp-core",
+ "sp-rpc",
+ "sp-runtime",
+]
+
+[[package]]
+name = "pallet-kitties-rpc-runtime-api"
+version = "4.0.0-dev"
+dependencies = [
+ "pallet-kitties",
+ "sp-api",
 ]
 
 [[package]]

@@ -58,6 +58,8 @@ frame-benchmarking-cli = { version = "4.0.0-dev", git = "https://github.com/pari
 node-template-runtime = { version = "4.0.0-dev", path = "../runtime" }
 pallet-template-rpc = { version = "4.0.0-dev", path = "../pallets/template/rpc" }
 pallet-template-rpc-runtime-api = { version = "4.0.0-dev", path = "../pallets/template/rpc/runtime-api" }
+pallet-kitties-rpc = { version = "4.0.0-dev", path = "../pallets/kitties/rpc" }
+pallet-kitties-rpc-runtime-api = { version = "4.0.0-dev", path = "../pallets/kitties/rpc/runtime-api" }
 
 
 [build-dependencies]
