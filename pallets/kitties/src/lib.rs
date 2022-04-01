@@ -37,13 +37,22 @@ pub mod pallet {
 	#[derive(Clone, Encode, Decode, PartialEq, RuntimeDebug, TypeInfo)]
 	#[scale_info(skip_type_params(T))]
 	#[codec(mel_bound())]
+    #[cfg_attr(feature = "std", derive(serde::Serialize, serde::Deserialize))]
 	pub struct Kitty<T: Config> {
 		pub dna: [u8; 16],   // Using 16 bytes to represent a kitty DNA
 		pub price: Option<BalanceOf<T>>,
 		pub gender: Gender,
 		pub owner: AccountOf<T>,
-        pub date_created: <T::TimeProvider as Time>::Moment,
+        // pub date_created: <T::TimeProvider as Time>::Moment,
 	}
+
+    // pub struct Kitty<T: Config> {
+	// 	pub dna: [u8; 16],   // Using 16 bytes to represent a kitty DNA
+	// 	pub price: Option<BalanceOf<T>>,
+	// 	pub gender: Gender,
+	// 	pub owner: AccountOf<T>,
+    //     pub date_created: <T::TimeProvider as Time>::Moment,
+	// }
 
 	impl<T: Config> sp_std::fmt::Display for Kitty<T> {
 		fn fmt(&self, f: &mut sp_std::fmt::Formatter<'_>) -> sp_std::fmt::Result {
@@ -350,7 +359,7 @@ pub mod pallet {
 				price: None,
 				gender: gender.unwrap_or_else(Self::gen_gender),
 				owner: owner.clone(),
-                date_created: T::TimeProvider::now(),
+                // date_created: T::TimeProvider::now(),
 			};
 
 			log::info!("{}", kitty);

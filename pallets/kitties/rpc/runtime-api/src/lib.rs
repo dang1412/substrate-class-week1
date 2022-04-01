@@ -19,14 +19,15 @@
 
 #![cfg_attr(not(feature = "std"), no_std)]
 
+use pallet_kitties::{ Kitty, Config };
+use codec::Codec;
+
 sp_api::decl_runtime_apis! {
-	// pub trait TransactionPaymentApi<Balance> where
-	// 	Balance: Codec + MaybeDisplay,
-	// {
-	// 	fn query_info(uxt: Block::Extrinsic, len: u32) -> RuntimeDispatchInfo<Balance>;
-	// 	fn query_fee_details(uxt: Block::Extrinsic, len: u32) -> FeeDetails<Balance>;
-	// }
-    pub trait KittyApi {
-        fn get_kitty_cnt() -> u64;
-    }
+    pub trait KittyApi<T> where 
+        T: Config + Codec,
+        // Kitty<T>: sp_api::Decode,
+        {
+            fn get_kitty_cnt() -> u64;
+            fn get_kitty(id: T::Hash) -> Kitty<T>;
+        }
 }

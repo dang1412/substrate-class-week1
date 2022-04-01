@@ -23,6 +23,8 @@ use sp_std::prelude::*;
 use sp_version::NativeVersion;
 use sp_version::RuntimeVersion;
 
+// use core::ops::Deref;
+
 // A few exports that help ease life for downstream crates.
 pub use frame_support::{
 	construct_runtime, parameter_types,
@@ -202,6 +204,8 @@ impl frame_system::Config for Runtime {
 }
 
 impl pallet_randomness_collective_flip::Config for Runtime {}
+
+// impl codec::WrapperTypeEncode for Runtime {}
 
 impl pallet_aura::Config for Runtime {
 	type AuthorityId = AuraId;
@@ -441,9 +445,13 @@ impl_runtime_apis! {
         }
     }
 
-    impl pallet_kitties_rpc_runtime_api::KittyApi<Block> for Runtime {
+    impl pallet_kitties_rpc_runtime_api::KittyApi<Block, Runtime> for Runtime {
         fn get_kitty_cnt() -> u64 {
             SubstrateKitties::kitty_cnt()
+        }
+
+        fn get_kitty(id: Hash) -> pallet_kitties::Kitty<Runtime> {
+            SubstrateKitties::kitties(&id).unwrap()
         }
     }
 
