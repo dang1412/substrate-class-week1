@@ -29,11 +29,15 @@ use sp_runtime::{
 use std::sync::Arc;
 
 use pallet_kitties_rpc_runtime_api::KittyApi as KittyRuntimeApi;
+use pallet_kitties::{ Kitty };
 
 #[rpc]
-pub trait KittyApi<BlockHash> {
-	#[rpc(name = "kitty_cnt")]
+pub trait KittyApi<BlockHash, T, U, Mo, Hash>
+    {
+	#[rpc(name = "kitties_count")]
     fn get_kitty_cnt(&self, at: Option<BlockHash>) -> Result<u64>;
+    #[rpc(name = "kitties_getKitty")]
+    fn get_kitty(&self, id: Hash, at: Option<BlockHash>) -> Result<Kitty<T, U, Mo>>;
 }
 
 /// A struct that implements the [`TransactionPaymentApi`].
@@ -66,12 +70,14 @@ impl From<Error> for i64 {
 	}
 }
 
-impl<C, Block> KittyApi<<Block as BlockT>::Hash>
+impl<C, Block, T, U, M, Hash> KittyApi<<Block as BlockT>::Hash, T, U, M, Hash>
 	for KittyStorage<C, Block>
 where
 	Block: BlockT,
 	C: 'static + ProvideRuntimeApi<Block> + HeaderBackend<Block>,
-	C::Api: KittyRuntimeApi<Block>,
+	C::Api: KittyRuntimeApi<Block, T, U, M, Hash>,
+    Kitty<T, U, M>: sp_api::Decode,
+    Hash: sp_api::Encode,
 {
 	fn get_kitty_cnt(
 		&self,
@@ -83,6 +89,25 @@ where
             self.client.info().best_hash));
 
         let result_api = api.get_kitty_cnt(&at);
+
+		result_api.map_err(|e| RpcError {
+			code: ErrorCode::ServerError(Error::RuntimeError.into()),
+			message: "Unable to query dispatch info.".into(),
+			data: Some(e.to_string().into()),
+		})
+	}
+
+    fn get_kitty(
+		&self,
+        id: Hash,
+		at: Option<<Block as BlockT>::Hash>,
+	) -> Result<Kitty<T, U, M>> {
+		let api = self.client.runtime_api();
+		let at = BlockId::hash(at.unwrap_or_else(||
+            // If the block hash is not supplied assume the best block.
+            self.client.info().best_hash));
+
+        let result_api = api.get_kitty(&at, id);
 
 		result_api.map_err(|e| RpcError {
 			code: ErrorCode::ServerError(Error::RuntimeError.into()),
