@@ -29,15 +29,15 @@ use sp_runtime::{
 use std::sync::Arc;
 
 use pallet_kitties_rpc_runtime_api::KittyApi as KittyRuntimeApi;
-use pallet_kitties::{ Kitty, Config };
-use codec::Codec;
-use std::fmt::Display;
+use pallet_kitties::{ Kitty };
 
 #[rpc]
-pub trait KittyApi<BlockHash, T> where T: Config + Codec, {
-	#[rpc(name = "kitty_cnt")]
+pub trait KittyApi<BlockHash, T, U, Mo, Hash>
+    {
+	#[rpc(name = "kitties_count")]
     fn get_kitty_cnt(&self, at: Option<BlockHash>) -> Result<u64>;
-    fn get_kitty(&self, id: T::Hash, at: Option<BlockHash>) -> Result<Kitty<T>>;
+    #[rpc(name = "kitties_getKitty")]
+    fn get_kitty(&self, id: Hash, at: Option<BlockHash>) -> Result<Kitty<T, U, Mo>>;
 }
 
 /// A struct that implements the [`TransactionPaymentApi`].
@@ -70,14 +70,14 @@ impl From<Error> for i64 {
 	}
 }
 
-impl<C, Block, T> KittyApi<<Block as BlockT>::Hash, T>
+impl<C, Block, T, U, M, Hash> KittyApi<<Block as BlockT>::Hash, T, U, M, Hash>
 	for KittyStorage<C, Block>
 where
 	Block: BlockT,
 	C: 'static + ProvideRuntimeApi<Block> + HeaderBackend<Block>,
-	C::Api: KittyRuntimeApi<Block, T>,
-    T: Config + Codec,
-    // Kitty<T>: sp_api::Decode,
+	C::Api: KittyRuntimeApi<Block, T, U, M, Hash>,
+    Kitty<T, U, M>: sp_api::Decode,
+    Hash: sp_api::Encode,
 {
 	fn get_kitty_cnt(
 		&self,
@@ -99,9 +99,9 @@ where
 
     fn get_kitty(
 		&self,
-        id: T::Hash,
+        id: Hash,
 		at: Option<<Block as BlockT>::Hash>,
-	) -> Result<Kitty<T>> {
+	) -> Result<Kitty<T, U, M>> {
 		let api = self.client.runtime_api();
 		let at = BlockId::hash(at.unwrap_or_else(||
             // If the block hash is not supplied assume the best block.

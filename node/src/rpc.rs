@@ -7,7 +7,7 @@
 
 use std::sync::Arc;
 
-use node_template_runtime::{opaque::Block, AccountId, Balance, Index, Runtime};
+use node_template_runtime::{opaque::Block, AccountId, Balance, Index, Hash};
 pub use sc_rpc_api::DenyUnsafe;
 use sc_transaction_pool_api::TransactionPool;
 use sp_api::ProvideRuntimeApi;
@@ -34,7 +34,7 @@ where
 	C::Api: pallet_transaction_payment_rpc::TransactionPaymentRuntimeApi<Block, Balance>,
 	C::Api: BlockBuilder<Block>,
     C::Api: pallet_template_rpc_runtime_api::SumStorageApi<Block>,
-    C::Api: pallet_kitties_rpc_runtime_api::KittyApi<Block, Runtime>,
+    C::Api: pallet_kitties_rpc_runtime_api::KittyApi<Block, Balance, AccountId, u64, Hash>,
 	P: TransactionPool + 'static,
 {
 	use pallet_transaction_payment_rpc::{TransactionPayment, TransactionPaymentApi};

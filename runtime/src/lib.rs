@@ -445,12 +445,12 @@ impl_runtime_apis! {
         }
     }
 
-    impl pallet_kitties_rpc_runtime_api::KittyApi<Block, Runtime> for Runtime {
+    impl pallet_kitties_rpc_runtime_api::KittyApi<Block, Balance, AccountId, u64, Hash> for Runtime {
         fn get_kitty_cnt() -> u64 {
             SubstrateKitties::kitty_cnt()
         }
 
-        fn get_kitty(id: Hash) -> pallet_kitties::Kitty<Runtime> {
+        fn get_kitty(id: Hash) -> pallet_kitties::Kitty<Balance, AccountId, u64> {
             SubstrateKitties::kitties(&id).unwrap()
         }
     }

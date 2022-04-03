@@ -13,7 +13,8 @@ mod benchmarking;
 
 #[frame_support::pallet]
 pub mod pallet {
-	use frame_support::pallet_prelude::*;
+	use core::fmt::Debug;
+    use frame_support::pallet_prelude::*;
 	use frame_system::pallet_prelude::*;
 	use frame_support::{
 		sp_runtime::traits::Hash,
@@ -29,32 +30,34 @@ pub mod pallet {
 	#[cfg(feature = "std")]
 	use frame_support::serde::{Deserialize, Serialize};
 
-	type AccountOf<T> = <T as frame_system::Config>::AccountId;
+	// type AccountOf<T> = <T as frame_system::Config>::AccountId;
 	type BalanceOf<T> =
 		<<T as Config>::Currency as Currency<<T as frame_system::Config>::AccountId>>::Balance;
+    type MomentOf<T> = <<T as Config>::TimeProvider as Time>::Moment;
 
 	// Struct for holding Kitty information.
 	#[derive(Clone, Encode, Decode, PartialEq, RuntimeDebug, TypeInfo)]
 	#[scale_info(skip_type_params(T))]
 	#[codec(mel_bound())]
-    #[cfg_attr(feature = "std", derive(serde::Serialize, serde::Deserialize))]
-	pub struct Kitty<T: Config> {
-		pub dna: [u8; 16],   // Using 16 bytes to represent a kitty DNA
-		pub price: Option<BalanceOf<T>>,
-		pub gender: Gender,
-		pub owner: AccountOf<T>,
-        // pub date_created: <T::TimeProvider as Time>::Moment,
-	}
-
-    // pub struct Kitty<T: Config> {
+    // #[cfg_attr(feature = "std", derive(serde::Serialize, serde::Deserialize))]
+	// pub struct Kitty<T: Config> {
 	// 	pub dna: [u8; 16],   // Using 16 bytes to represent a kitty DNA
 	// 	pub price: Option<BalanceOf<T>>,
 	// 	pub gender: Gender,
 	// 	pub owner: AccountOf<T>,
-    //     pub date_created: <T::TimeProvider as Time>::Moment,
+    //     // pub date_created: <T::TimeProvider as Time>::Moment,
 	// }
 
-	impl<T: Config> sp_std::fmt::Display for Kitty<T> {
+    #[cfg_attr(feature = "std", derive(serde::Serialize, serde::Deserialize))]
+    pub struct Kitty<Balance, Account, M> {
+		pub dna: [u8; 16],   // Using 16 bytes to represent a kitty DNA
+		pub price: Option<Balance>,
+		pub gender: Gender,
+		pub owner: Account,
+        pub date_created: M,
+	}
+
+	impl<Balance: Debug, Account: Debug, M> sp_std::fmt::Display for Kitty<Balance, Account, M> {
 		fn fmt(&self, f: &mut sp_std::fmt::Formatter<'_>) -> sp_std::fmt::Result {
 			write!(f, "(dna: {:?}, price: {:?}, gender: {:?}, owner: {:?})", self.dna, self.price, self.gender, self.owner)
 		}
@@ -139,7 +142,7 @@ pub mod pallet {
 	#[pallet::storage]
 	#[pallet::getter(fn kitties)]
 	/// Stores a Kitty's unique traits, owner and price.
-	pub(super) type Kitties<T: Config> = StorageMap<_, Twox64Concat, T::Hash, Kitty<T>>;
+	pub(super) type Kitties<T: Config> = StorageMap<_, Twox64Concat, T::Hash, Kitty<BalanceOf<T>, T::AccountId, MomentOf<T>>>;
 
 	#[pallet::storage]
 	#[pallet::getter(fn kitties_owned)]
@@ -354,12 +357,12 @@ pub mod pallet {
 			dna: Option<[u8; 16]>,
 			gender: Option<Gender>,
 		) -> Result<T::Hash, Error<T>> {
-			let kitty = Kitty::<T> {
+			let kitty = Kitty::<BalanceOf<T>, T::AccountId, MomentOf<T>> {
 				dna: dna.unwrap_or_else(Self::gen_dna),
 				price: None,
 				gender: gender.unwrap_or_else(Self::gen_gender),
 				owner: owner.clone(),
-                // date_created: T::TimeProvider::now(),
+                date_created: T::TimeProvider::now(),
 			};
 
 			log::info!("{}", kitty);

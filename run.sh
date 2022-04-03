@@ -1,1 +1,1 @@
-curl http://localhost:9933 -H "Content-type:application/json;charset=utf-8" -d '{"jsonrpc": "2.0", "id": 1, "method": "kitty_cnt", "params":[]}'
+curl http://localhost:9933 -H "Content-type:application/json;charset=utf-8" -d '{"jsonrpc": "2.0", "id": 1, "method": "kitties_getKitty", "params":["0xfd196331f8449bca86365518a458ef0b8eacc34a5e23b06d7b62782e72e1c8a0"]}'
